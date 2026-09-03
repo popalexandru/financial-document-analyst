@@ -2,9 +2,9 @@
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import Field, PositiveInt
+from pydantic import Field, PositiveInt, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,7 +24,21 @@ class Settings(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     data_dir: Path = Path("data/documents")
     max_upload_size_mb: PositiveInt = 10
+    chroma_dir: Path = Path("data/chroma")
+    chunk_size: PositiveInt = 800
+    chunk_overlap: int = Field(default=120, ge=0)
+    embedding_provider: Literal["local", "openai"] = "local"
+    embedding_dimensions: PositiveInt = 256
+    openai_embedding_model: str = "text-embedding-3-small"
     openai_api_key: str | None = Field(default=None, repr=False)
+
+    @model_validator(mode="after")
+    def validate_chunking_settings(self) -> Self:
+        """Ensure overlap cannot prevent the chunker from advancing."""
+
+        if self.chunk_overlap >= self.chunk_size:
+            raise ValueError("CHUNK_OVERLAP must be smaller than CHUNK_SIZE.")
+        return self
 
 
 @lru_cache

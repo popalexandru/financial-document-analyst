@@ -22,6 +22,7 @@ async def test_upload_csv_returns_ingestion_metadata(test_app: FastAPI) -> None:
     assert payload["original_filename"] == "statement.csv"
     assert payload["document_type"] == "csv"
     assert payload["segment_count"] == 1
+    assert payload["chunk_count"] == 1
     assert payload["size_bytes"] == len(content)
     assert len(payload["sha256"]) == 64
     assert Path(payload["stored_filename"]).suffix == ".csv"

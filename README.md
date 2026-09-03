@@ -6,7 +6,7 @@ calculation tools.
 
 The project is being built incrementally. It currently provides an executable FastAPI foundation,
 environment-based configuration, PDF/CSV ingestion, source-addressable parsing, quality checks,
-and automated tests.
+local or OpenAI embeddings, persistent Chroma vector indexing, and automated tests.
 
 ## Requirements
 
@@ -74,6 +74,28 @@ Example response:
 
 CSV rows retain their source row number and PDF text retains its page number. Scanned PDFs are
 rejected clearly because OCR is outside the current MVP.
+
+## Vector indexing
+
+Every parsed source segment is split into bounded chunks with overlap. Each chunk retains its
+document ID and original page or row, receives an embedding, and is upserted into a persistent
+Chroma collection under `data/chroma`.
+
+The default `EMBEDDING_PROVIDER=local` uses deterministic lexical hashing. It requires no account,
+model download, network connection, or API cost, making the repository testable at any time. It is
+an offline demo baseline rather than a production-quality semantic model.
+
+To use OpenAI embeddings instead:
+
+```env
+EMBEDDING_PROVIDER=openai
+OPENAI_API_KEY=your-key
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+EMBEDDING_DIMENSIONS=256
+```
+
+Provider/model combinations use separate Chroma collections so incompatible vector spaces cannot
+be mixed. The OpenAI adapter batches document inputs, following the official embeddings API.
 
 ## Roadmap
 

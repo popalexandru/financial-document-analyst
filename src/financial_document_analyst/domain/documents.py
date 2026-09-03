@@ -18,7 +18,7 @@ class ParsedSegment(BaseModel):
 
     content: str = Field(min_length=1)
     location: str = Field(min_length=1)
-    metadata: dict[str, str | int] = Field(default_factory=dict)
+    metadata: dict[str, str | int | float | bool] = Field(default_factory=dict)
 
 
 class ParsedDocument(BaseModel):
@@ -26,7 +26,25 @@ class ParsedDocument(BaseModel):
 
     document_type: DocumentType
     segments: list[ParsedSegment] = Field(min_length=1)
-    metadata: dict[str, str | int] = Field(default_factory=dict)
+    metadata: dict[str, str | int | float | bool] = Field(default_factory=dict)
+
+
+class DocumentChunk(BaseModel):
+    """A bounded text unit ready for embedding and retrieval."""
+
+    id: str
+    document_id: str
+    content: str = Field(min_length=1)
+    location: str = Field(min_length=1)
+    chunk_index: int = Field(ge=0)
+    metadata: dict[str, str | int | float | bool] = Field(default_factory=dict)
+
+
+class SearchResult(BaseModel):
+    """A retrieved chunk and its normalized similarity score."""
+
+    chunk: DocumentChunk
+    score: float = Field(ge=0.0, le=1.0)
 
 
 class IngestedDocument(BaseModel):
@@ -39,6 +57,7 @@ class IngestedDocument(BaseModel):
     size_bytes: int = Field(ge=1)
     sha256: str
     segment_count: int = Field(ge=1)
+    chunk_count: int = Field(default=0, ge=0)
     stored_filename: str
     created_at: datetime
 

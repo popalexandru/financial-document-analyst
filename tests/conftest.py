@@ -1,5 +1,7 @@
 """Shared pytest fixtures."""
 
+from pathlib import Path
+
 import pytest
 from fastapi import FastAPI
 
@@ -15,10 +17,15 @@ def anyio_backend() -> str:
 
 
 @pytest.fixture
-def test_app() -> FastAPI:
+def test_app(tmp_path: Path) -> FastAPI:
     """Provide an isolated application with deterministic test settings."""
 
-    settings = Settings(app_env="test")
+    settings = Settings(
+        app_env="test",
+        data_dir=tmp_path / "documents",
+        chroma_dir=tmp_path / "chroma",
+        database_path=tmp_path / "financial.db",
+    )
     application = create_app(settings)
     application.dependency_overrides[get_settings] = lambda: settings
 

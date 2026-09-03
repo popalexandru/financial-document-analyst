@@ -11,8 +11,14 @@ requires-python = ">=3.11,<3.14"
 license = { text = "MIT" }
 authors = [{ name = "Financial Document Analyst contributors" }]
 dependencies = [
+  "chromadb>=1.5,<2",
   "fastapi>=0.115,<1",
+  "numpy>=1.26,<2.5",
+  "onnxruntime<1.24; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+  "openai>=2.26,<3",
+  "pymupdf>=1.25,<2",
   "pydantic-settings>=2.7,<3",
+  "python-multipart>=0.0.20,<1",
   "uvicorn[standard]>=0.34,<1",
 ]
 
@@ -31,6 +37,11 @@ packages = ["src/financial_document_analyst"]
 [tool.pytest.ini_options]
 addopts = "--strict-markers --strict-config --cov=financial_document_analyst --cov-report=term-missing"
 testpaths = ["tests"]
+filterwarnings = [
+  "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
+  "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning",
+  "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
+]
 
 [tool.coverage.run]
 branch = true

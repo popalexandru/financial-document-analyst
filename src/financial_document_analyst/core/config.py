@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     data_dir: Path = Path("data/documents")
     max_upload_size_mb: PositiveInt = 10
     chroma_dir: Path = Path("data/chroma")
+    database_path: Path = Path("data/financial.db")
     chunk_size: PositiveInt = 800
     chunk_overlap: int = Field(default=120, ge=0)
     embedding_provider: Literal["local", "openai"] = "local"

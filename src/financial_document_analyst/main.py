@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI
 
+from financial_document_analyst.api.routes.analytics import router as analytics_router
 from financial_document_analyst.api.routes.documents import router as documents_router
 from financial_document_analyst.api.routes.health import router as health_router
 from financial_document_analyst.api.routes.queries import router as queries_router
@@ -19,6 +20,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         description="Financial document intelligence and RAG API.",
     )
     application.include_router(health_router)
+    application.include_router(analytics_router)
     application.include_router(documents_router)
     application.include_router(queries_router)
     return application

@@ -24,6 +24,7 @@ def test_app(tmp_path: Path) -> FastAPI:
         app_env="test",
         data_dir=tmp_path / "documents",
         chroma_dir=tmp_path / "chroma",
+        database_path=tmp_path / "financial.db",
     )
     application = create_app(settings)
     application.dependency_overrides[get_settings] = lambda: settings

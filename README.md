@@ -116,6 +116,25 @@ ID, similarity score, and excerpt.
 `openai` to synthesize a natural-language answer through the Responses API. OpenAI requests use
 `store=False`; enabling the provider still sends the retrieved financial context to OpenAI.
 
+## Structured transactions and deterministic tools
+
+CSV uploads are also normalized into a local SQLite database at `data/financial.db`. The extractor
+maps common columns for date, description, amount, currency, and category. Monetary amounts are
+stored as integer cents, so all analytics are exact and independent of an LLM.
+
+```bash
+curl 'http://127.0.0.1:8000/analytics/summary?month=2026-08&currency=RON'
+curl 'http://127.0.0.1:8000/analytics/categories?month=2026-08&currency=RON'
+curl 'http://127.0.0.1:8000/analytics/merchants/Green%20Garden?currency=RON'
+curl 'http://127.0.0.1:8000/analytics/comparison?first_month=2026-07&second_month=2026-08&currency=RON'
+curl 'http://127.0.0.1:8000/analytics/recurring?currency=RON'
+```
+
+The API reports monetary fields as `*_cents`: for example, `46185` represents `461.85 RON`.
+Tools currently support deterministic CSV extraction. PDF/facture extraction remains a future
+extension because layout variation and scanned documents need stronger table/OCR processing before
+financial calculations can be considered reliable.
+
 ## Roadmap
 
 1. Chunking, embeddings, and vector storage

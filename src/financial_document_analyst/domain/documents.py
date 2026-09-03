@@ -58,6 +58,7 @@ class IngestedDocument(BaseModel):
     sha256: str
     segment_count: int = Field(ge=1)
     chunk_count: int = Field(default=0, ge=0)
+    transaction_count: int = Field(default=0, ge=0)
     stored_filename: str
     created_at: datetime
 

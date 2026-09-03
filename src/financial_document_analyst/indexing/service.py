@@ -33,7 +33,17 @@ class IndexingService:
     def index(self, result: IngestionResult) -> int:
         """Index a parsed document and return the number of stored chunks."""
 
-        chunks = self._chunker.chunk(result.document.id, result.parsed_document)
+        chunks = [
+            chunk.model_copy(
+                update={
+                    "metadata": {
+                        **chunk.metadata,
+                        "original_filename": result.document.original_filename,
+                    }
+                }
+            )
+            for chunk in self._chunker.chunk(result.document.id, result.parsed_document)
+        ]
         if not chunks:
             raise IndexingError("The parsed document produced no indexable chunks.")
         embeddings = self._embedding_provider.embed_documents([chunk.content for chunk in chunks])

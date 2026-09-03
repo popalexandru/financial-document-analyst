@@ -23,20 +23,25 @@ def build_embedding_provider(settings: Settings) -> EmbeddingProvider:
     return LocalHashEmbeddingProvider(dimensions=settings.embedding_dimensions)
 
 
+def build_vector_store(
+    settings: Settings, embedding_provider: EmbeddingProvider
+) -> ChromaVectorStore:
+    """Open the collection dedicated to one embedding vector space."""
+
+    provider_key = re.sub(r"[^a-zA-Z0-9._-]+", "-", embedding_provider.name)
+    collection_name = f"financial-documents-{provider_key}-{settings.embedding_dimensions}"
+    return ChromaVectorStore(path=settings.chroma_dir, collection_name=collection_name)
+
+
 def build_indexing_service(settings: Settings) -> IndexingService:
     """Assemble the indexing pipeline with persistent local vector storage."""
 
     embedding_provider = build_embedding_provider(settings)
-    provider_key = re.sub(r"[^a-zA-Z0-9._-]+", "-", embedding_provider.name)
-    collection_name = f"financial-documents-{provider_key}-{settings.embedding_dimensions}"
     return IndexingService(
         chunker=TextChunker(
             chunk_size=settings.chunk_size,
             overlap=settings.chunk_overlap,
         ),
         embedding_provider=embedding_provider,
-        vector_store=ChromaVectorStore(
-            path=settings.chroma_dir,
-            collection_name=collection_name,
-        ),
+        vector_store=build_vector_store(settings, embedding_provider),
     )

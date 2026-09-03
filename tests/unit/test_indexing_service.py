@@ -81,6 +81,7 @@ def test_indexing_service_coordinates_components() -> None:
     assert service.embedding_provider_name == "fake"
     assert count == 1
     assert store.chunks[0].document_id == "doc-1"
+    assert store.chunks[0].metadata["original_filename"] == "statement.csv"
 
 
 @pytest.mark.parametrize("embeddings", [[], [[1.0]], [[1.0, 0.0], [0.0, 1.0]]])

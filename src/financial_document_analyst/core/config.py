@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     embedding_provider: Literal["local", "openai"] = "local"
     embedding_dimensions: PositiveInt = 256
     openai_embedding_model: str = "text-embedding-3-small"
+    generation_provider: Literal["local", "openai"] = "local"
+    openai_generation_model: str = "gpt-5.4-mini"
+    rag_top_k: PositiveInt = 5
+    rag_minimum_score: float = Field(default=0.05, ge=0.0, le=1.0)
     openai_api_key: str | None = Field(default=None, repr=False)
 
     @model_validator(mode="after")

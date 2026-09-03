@@ -97,6 +97,25 @@ EMBEDDING_DIMENSIONS=256
 Provider/model combinations use separate Chroma collections so incompatible vector spaces cannot
 be mixed. The OpenAI adapter batches document inputs, following the official embeddings API.
 
+## RAG queries with citations
+
+Ask a question after uploading at least one document:
+
+```bash
+curl -X POST http://127.0.0.1:8000/queries \
+  -H "Content-Type: application/json" \
+  -d '{"question":"restaurant","top_k":2,"minimum_score":0.05}'
+```
+
+The query is embedded with the same provider used for indexing. Chroma returns the closest chunks,
+the configured generator creates the answer, and the application attaches trusted citations from
+stored metadata. Citations contain the document ID, original filename, source page or row, chunk
+ID, similarity score, and excerpt.
+
+`GENERATION_PROVIDER=local` returns ranked source text and keeps the demo fully offline. Set it to
+`openai` to synthesize a natural-language answer through the Responses API. OpenAI requests use
+`store=False`; enabling the provider still sends the retrieved financial context to OpenAI.
+
 ## Roadmap
 
 1. Chunking, embeddings, and vector storage

@@ -1,9 +1,10 @@
 """Environment-based application configuration."""
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, PositiveInt
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,6 +22,8 @@ class Settings(BaseSettings):
     app_debug: bool = False
     app_version: str = "0.1.0"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    data_dir: Path = Path("data/documents")
+    max_upload_size_mb: PositiveInt = 10
     openai_api_key: str | None = Field(default=None, repr=False)
 
 
